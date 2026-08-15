@@ -26,13 +26,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Confirm the site entrypoint exists
         run: test -f index.html
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.x"
 
@@ -40,7 +40,9 @@ jobs:
         run: pip install html5validator
 
       - name: Validate HTML5 markup
-        run: html5validator --root . --match "*.html"
+        run: >
+          html5validator --root . --match "*.html"
+          --ignore-re "Property .backdrop-filter. doesn.t exist"
 
   deploy:
     name: Deploy to GitHub Pages
@@ -52,13 +54,13 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
       - name: Upload site as Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: "."
 
