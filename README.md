@@ -1,5 +1,5 @@
 # runbook
-open site -> # https://maryoussef149-cell.github.io/DevOps-Runbook/
+open site -> (.https://maryoussef149-cell.github.io/DevOps-Runbook/)
 
 A single-page reference site for junior DevOps engineers: a troubleshooting **runbook** you diagnose before you check the answer, plus an **interview prep** section organized by company. Built as a static site no build step, no framework, no backend.
 
