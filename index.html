@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Runbook: DevOps Troubleshooting &amp; Interview Prep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F1F4F7;
+    --bg-panel:#FFFFFF;
+    --bg-alt:#E7ECF1;
+    --bg-inset:#0F2033;
+    --ink-on-inset:#DCE8F2;
+    --grid-line:rgba(43,92,138,0.10);
+    --ink:#142433;
+    --ink-muted:#57697A;
+    --ink-faint:#8598A8;
+    --border:#C9D4DD;
+    --border-strong:#A9B9C6;
+
+    --blue:#2B5C8A;    --blue-soft:#E4EDF5;
+    --teal:#1E7D77;    --teal-soft:#DFF0EE;
+    --violet:#6A4C93;  --violet-soft:#EDE6F3;
+    --slate:#51687D;   --slate-soft:#E6ECF1;
+    --rose:#A24B6F;    --rose-soft:#F5E7ED;
+    --olive:#767A2E;   --olive-soft:#EFF0DD;
+    --rust:#A2552F;    --rust-soft:#F3E6DD;
+
+    --amber:#B9791C;   --amber-soft:#FBEED9;
+    --green:#2C8158;   --green-soft:#E1F3E8;
+    --red:#B23B30;     --red-soft:#FBE6E3;
+
+    --radius:10px;
+    --font-display:'Space Grotesk', system-ui, sans-serif;
+    --font-body:'Inter', system-ui, sans-serif;
+    --font-mono:'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
+    --shadow: 0 1px 2px rgba(20,36,51,0.06), 0 1px 1px rgba(20,36,51,0.04);
+  }
+
+  [data-theme="dark"]{
+    --bg:#0C1A26;
+    --bg-panel:#122336;
+    --bg-alt:#152A3F;
+    --bg-inset:#081521;
+    --ink-on-inset:#BFD6E6;
+    --grid-line:rgba(111,168,216,0.08);
+    --ink:#E4EDF4;
+    --ink-muted:#9AB0C2;
+    --ink-faint:#5E7draw88; /* corrected below */
+    --ink-faint:#63798C;
+    --border:#20374C;
+    --border-strong:#2E4A62;
+
+    --blue:#6FA8D8;    --blue-soft:#173049;
+    --teal:#4FC4BB;    --teal-soft:#12302E;
+    --violet:#B79CE0;  --violet-soft:#28203C;
+    --slate:#9BB4C4;   --slate-soft:#1B2C3A;
+    --rose:#DB92B4;    --rose-soft:#331F2A;
+    --olive:#C9CE7A;   --olive-soft:#26280F;
+    --rust:#E0966A;    --rust-soft:#33200F;
+
+    --amber:#E3A857;   --amber-soft:#332715;
+    --green:#5FC189;   --green-soft:#123324;
+    --red:#E27164;     --red-soft:#331A15;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.18);
+  }
+
+  *,*::before,*::after{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0;
+    font-family:var(--font-body);
+    color:var(--ink);
+    background-color:var(--bg);
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size:28px 28px;
+    -webkit-font-smoothing:antialiased;
+    transition:background-color .25s ease, color .25s ease;
+  }
+  h1,h2,h3,h4{ font-family:var(--font-display); margin:0; color:var(--ink); }
+  p{ margin:0; }
+  ul,ol{ margin:0; padding:0; }
+  button{ font-family:inherit; cursor:pointer; }
+  code, pre, .mono{ font-family:var(--font-mono); }
+  a{ color:var(--blue); }
+
+  .wrap{ max-width:1120px; margin:0 auto; padding:0 20px; }
+
+  /* ---------- TOPBAR ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:40;
+    background-color:color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--border);
+  }
+  .topbar-inner{
+    display:flex; align-items:center; gap:18px;
+    padding:14px 20px; max-width:1120px; margin:0 auto;
+    flex-wrap:wrap;
+  }
+  .brand{ display:flex; align-items:center; gap:8px; margin-right:auto; }
+  .brand-dot{
+    width:9px; height:9px; border-radius:50%;
+    background:var(--green);
+    box-shadow:0 0 0 3px var(--green-soft);
+    flex:none;
+  }
+  .brand-text{ font-family:var(--font-display); font-weight:700; font-size:1.05rem; letter-spacing:-.01em; }
+  .brand-text .dim{ color:var(--ink-faint); font-family:var(--font-mono); font-weight:500; font-size:.92rem; }
+
+  .nav{ display:flex; gap:4px; background:var(--bg-alt); border:1px solid var(--border); border-radius:999px; padding:3px; }
+  .nav-btn{
+    border:none; background:transparent; color:var(--ink-muted);
+    font-size:.82rem; font-weight:600; letter-spacing:.02em;
+    padding:7px 14px; border-radius:999px; transition:all .15s ease;
+  }
+  .nav-btn.active{ background:var(--bg-panel); color:var(--ink); box-shadow:var(--shadow); }
+  .nav-btn:hover:not(.active){ color:var(--ink); }
+
+  .theme-toggle{
+    display:flex; align-items:center; gap:8px;
+    border:1px solid var(--border); background:var(--bg-alt);
+    border-radius:999px; padding:4px 6px 4px 12px;
+  }
+  #themeLabel{ font-family:var(--font-mono); font-size:.68rem; letter-spacing:.08em; color:var(--ink-faint); width:38px; }
+  .switch{
+    position:relative; width:38px; height:22px; border-radius:999px;
+    background:var(--border-strong); border:none; padding:0; flex:none;
+    transition:background .2s ease;
+  }
+  .switch::after{
+    content:""; position:absolute; top:2px; left:2px; width:18px; height:18px;
+    border-radius:50%; background:var(--bg-panel); transition:transform .2s ease;
+    box-shadow:0 1px 2px rgba(0,0,0,0.3);
+  }
+  [data-theme="dark"] .switch{ background:var(--blue); }
+  [data-theme="dark"] .switch::after{ transform:translateX(16px); }
+
+  /* ---------- HERO ---------- */
+  .view{ display:none; }
+  .view.active{ display:block; }
+
+  .hero{ padding:52px 0 28px; }
+  .kicker{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--font-mono); font-size:.72rem; letter-spacing:.14em;
+    color:var(--blue); text-transform:uppercase; margin-bottom:14px;
+  }
+  .kicker::before{ content:""; width:16px; height:1px; background:var(--blue); }
+  .hero h1{ font-size:clamp(1.7rem, 4vw, 2.5rem); line-height:1.15; max-width:15ch; letter-spacing:-.01em; }
+  .hero p.sub{ margin-top:14px; max-width:56ch; color:var(--ink-muted); font-size:1rem; line-height:1.6; }
+
+  .stat-strip{
+    margin-top:26px; display:flex; flex-wrap:wrap; gap:0;
+    border:1px solid var(--border); border-radius:var(--radius); overflow:hidden;
+    background:var(--bg-panel); width:fit-content; max-width:100%;
+  }
+  .stat-cell{
+    padding:11px 18px; border-right:1px solid var(--border);
+    font-family:var(--font-mono); font-size:.78rem; letter-spacing:.02em; color:var(--ink-muted);
+    white-space:nowrap;
+  }
+  .stat-cell:last-child{ border-right:none; }
+  .stat-cell strong{ color:var(--ink); font-weight:600; }
+  .stat-cell.progress strong{ color:var(--green); }
+
+  /* ---------- CONTROLS ---------- */
+  .controls{ margin:30px 0 22px; display:flex; flex-direction:column; gap:14px; }
+  .search-row{ position:relative; max-width:420px; }
+  .search-row input{
+    width:100%; padding:10px 14px 10px 34px; border-radius:var(--radius);
+    border:1px solid var(--border); background:var(--bg-panel); color:var(--ink);
+    font-family:var(--font-mono); font-size:.86rem; outline:none;
+    transition:border-color .15s ease;
+  }
+  .search-row input:focus{ border-color:var(--blue); }
+  .search-row input::placeholder{ color:var(--ink-faint); }
+  .search-row::before{
+    content:"⌕"; position:absolute; left:12px; top:50%; transform:translateY(-50%);
+    color:var(--ink-faint); font-size:1rem; pointer-events:none;
+  }
+
+  .chip-row{ display:flex; gap:8px; flex-wrap:wrap; }
+  .chip{
+    border:1px solid var(--border); background:var(--bg-panel); color:var(--ink-muted);
+    font-size:.78rem; font-weight:600; padding:7px 13px; border-radius:999px;
+    display:inline-flex; align-items:center; gap:6px; transition:all .15s ease;
+  }
+  .chip .n{ color:var(--ink-faint); font-family:var(--font-mono); font-weight:500; }
+  .chip:hover{ border-color:var(--border-strong); color:var(--ink); }
+  .chip.active{ background:var(--ink); color:var(--bg-panel); border-color:var(--ink); }
+  .chip.active .n{ color:color-mix(in srgb, var(--bg-panel) 70%, transparent); }
+  [data-theme="dark"] .chip.active{ background:var(--blue); border-color:var(--blue); color:#0C1A26; }
+  [data-theme="dark"] .chip.active .n{ color:#0C1A26; opacity:.7; }
+
+  /* ---------- TICKET GRID ---------- */
+  .tickets{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(360px, 1fr));
+    gap:16px; padding-bottom:60px;
+  }
+  .empty-state{ padding:40px 0; color:var(--ink-faint); font-family:var(--font-mono); font-size:.9rem; }
+
+  .ticket{
+    position:relative; background:var(--bg-panel); border:1px solid var(--border);
+    border-radius:var(--radius); padding:18px 18px 16px; box-shadow:var(--shadow);
+    --accent:var(--blue); --accent-soft:var(--blue-soft);
+  }
+  .ticket::before, .ticket::after{
+    content:""; position:absolute; width:12px; height:12px; pointer-events:none; opacity:.55;
+  }
+  .ticket::before{ top:-1px; left:-1px; border-top:2px solid var(--accent); border-left:2px solid var(--accent); }
+  .ticket::after{ bottom:-1px; right:-1px; border-bottom:2px solid var(--accent); border-right:2px solid var(--accent); }
+
+  .ticket.cat-docker{ --accent:var(--blue); --accent-soft:var(--blue-soft); }
+  .ticket.cat-kubernetes{ --accent:var(--teal); --accent-soft:var(--teal-soft); }
+  .ticket.cat-git{ --accent:var(--violet); --accent-soft:var(--violet-soft); }
+  .ticket.cat-linux{ --accent:var(--slate); --accent-soft:var(--slate-soft); }
+  .ticket.cat-networking{ --accent:var(--rose); --accent-soft:var(--rose-soft); }
+  .ticket.cat-ci-cd{ --accent:var(--olive); --accent-soft:var(--olive-soft); }
+  .ticket.cat-iac{ --accent:var(--rust); --accent-soft:var(--rust-soft); }
+
+  .chip.cat-docker{ --accent:var(--blue); } .chip.cat-kubernetes{ --accent:var(--teal); }
+  .chip.cat-git{ --accent:var(--violet); } .chip.cat-linux{ --accent:var(--slate); }
+  .chip.cat-networking{ --accent:var(--rose); } .chip.cat-ci-cd{ --accent:var(--olive); }
+  .chip.cat-iac{ --accent:var(--rust); }
+  .chip.active[class*="cat-"]{ background:var(--accent); border-color:var(--accent); color:#fff; }
+  .chip.active[class*="cat-"] .n{ color:#fff; opacity:.75; }
+
+  .ticket-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+  .cat-tag{
+    font-family:var(--font-mono); font-size:.68rem; font-weight:600; letter-spacing:.06em;
+    text-transform:uppercase; color:var(--accent); background:var(--accent-soft);
+    padding:3px 8px; border-radius:5px;
+  }
+  .status-pill{
+    display:inline-flex; align-items:center; gap:6px; font-family:var(--font-mono);
+    font-size:.68rem; font-weight:600; letter-spacing:.08em; padding:3px 9px 3px 7px;
+    border-radius:999px; border:1px solid transparent;
+  }
+  .status-pill.is-open{ color:var(--amber); background:var(--amber-soft); }
+  .status-pill.is-resolved{ color:var(--green); background:var(--green-soft); }
+  .status-dot{ width:6px; height:6px; border-radius:50%; background:currentColor; }
+  .status-pill.is-open .status-dot{ animation:pulse 1.8s ease-in-out infinite; }
+
+  .ticket-title{ font-size:1.02rem; line-height:1.35; margin-bottom:12px; letter-spacing:-.005em; }
+  .ticket-title .idx{ color:var(--ink-faint); font-family:var(--font-mono); font-weight:500; font-size:.85em; }
+
+  .block-label{
+    font-family:var(--font-mono); font-size:.68rem; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--ink-faint); margin-bottom:6px;
+  }
+
+  .demo-block{
+    background:var(--bg-inset); border-radius:8px; overflow:hidden; margin-bottom:14px;
+  }
+  .demo-chrome{ display:flex; gap:5px; padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.06); }
+  .demo-chrome i{ width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,0.18); }
+  .demo-text{
+    margin:0; padding:12px 14px 14px; font-size:.8rem; line-height:1.6;
+    color:var(--ink-on-inset); white-space:pre-wrap; word-break:break-word;
+  }
+
+  .tips-block{ margin-bottom:14px; }
+  .tips-list{ list-style:none; display:flex; flex-direction:column; gap:7px; }
+  .tips-list li{
+    font-size:.87rem; line-height:1.5; color:var(--ink-muted); padding-left:20px; position:relative;
+  }
+  .tips-list li::before{
+    content:"?"; position:absolute; left:0; top:0; width:14px; height:14px; border-radius:4px;
+    border:1.4px solid var(--border-strong); color:var(--ink-faint); font-size:.66rem;
+    font-family:var(--font-mono); display:flex; align-items:center; justify-content:center; line-height:1;
+    top:1px;
+  }
+
+  .reveal-btn{
+    width:100%; display:flex; align-items:center; justify-content:center; gap:8px;
+    background:var(--bg-alt); border:1px dashed var(--border-strong); color:var(--ink);
+    font-size:.82rem; font-weight:600; padding:10px; border-radius:8px; transition:all .15s ease;
+  }
+  .reveal-btn:hover{ border-color:var(--accent); color:var(--accent); border-style:solid; }
+  .reveal-btn:focus-visible{ outline:2px solid var(--blue); outline-offset:2px; }
+  .reveal-btn .chev{ transition:transform .2s ease; font-size:.7rem; }
+  .reveal-btn[aria-expanded="true"] .chev{ transform:rotate(180deg); }
+
+  .solution-panel{ margin-top:14px; padding-top:14px; border-top:1px solid var(--border); }
+  .solution-panel[hidden]{ display:none; }
+  .cause-text{ font-size:.87rem; line-height:1.6; color:var(--ink); margin-bottom:14px; }
+  .fix-list{ list-style:none; counter-reset:fix; display:flex; flex-direction:column; gap:8px; margin-bottom:14px; }
+  .fix-list li{ counter-increment:fix; font-size:.87rem; line-height:1.55; color:var(--ink); padding-left:24px; position:relative; }
+  .fix-list li::before{
+    content:counter(fix); position:absolute; left:0; top:0; width:16px; height:16px; border-radius:50%;
+    background:var(--accent-soft); color:var(--accent); font-family:var(--font-mono); font-size:.65rem;
+    font-weight:700; display:flex; align-items:center; justify-content:center;
+  }
+
+  @keyframes pulse{ 0%,100%{ opacity:1; } 50%{ opacity:.35; } }
+
+  /* ---------- INTERVIEW SECTION ---------- */
+  .company-tabs{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:26px; }
+  .company-tab{
+    border:1px solid var(--border); background:var(--bg-panel); border-radius:var(--radius);
+    padding:10px 16px; display:flex; align-items:center; gap:9px; transition:all .15s ease;
+    --accent:var(--blue);
+  }
+  .company-tab .badge{
+    width:26px; height:26px; border-radius:6px; background:var(--accent); color:#fff;
+    font-family:var(--font-mono); font-size:.62rem; font-weight:700; letter-spacing:-.02em;
+    display:flex; align-items:center; justify-content:center; flex:none;
+  }
+  .company-tab .name{ font-size:.85rem; font-weight:600; color:var(--ink); white-space:nowrap; }
+  .company-tab:hover{ border-color:var(--accent); }
+  .company-tab.active{ border-color:var(--accent); background:var(--accent-soft, var(--bg-alt)); box-shadow:var(--shadow); }
+  .company-tab.co-google{ --accent:var(--blue); }
+  .company-tab.co-amazon{ --accent:var(--teal); }
+  .company-tab.co-microsoft{ --accent:var(--violet); }
+  .company-tab.co-meta{ --accent:var(--rose); }
+  .company-tab.co-netflix{ --accent:var(--rust); }
+  .company-tab.co-universal{ --accent:var(--olive); }
+
+  .company-panel-head{ margin-bottom:22px; }
+  .company-panel-head h2{ font-size:1.3rem; margin-bottom:8px; }
+  .company-panel-head p{ color:var(--ink-muted); font-size:.92rem; line-height:1.6; max-width:65ch; }
+
+  .qgroup{ margin-bottom:22px; }
+  .qgroup-title{
+    font-family:var(--font-mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.1em;
+    color:var(--ink-faint); margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid var(--border);
+  }
+  .qlist{ display:flex; flex-direction:column; gap:8px; }
+  .qitem{
+    background:var(--bg-panel); border:1px solid var(--border); border-radius:8px; overflow:hidden;
+  }
+  .qitem summary{
+    list-style:none; cursor:pointer; padding:13px 16px; display:flex; align-items:flex-start;
+    justify-content:space-between; gap:14px; font-size:.9rem; font-weight:500; color:var(--ink);
+  }
+  .qitem summary::-webkit-details-marker{ display:none; }
+  .qitem summary .qmark{
+    font-family:var(--font-mono); color:var(--ink-faint); flex:none; margin-top:1px;
+    transition:transform .2s ease;
+  }
+  .qitem[open] summary .qmark{ transform:rotate(45deg); }
+  .qitem summary:focus-visible{ outline:2px solid var(--blue); outline-offset:-2px; }
+  .qhint{ padding:0 16px 15px 16px; }
+  .qhint p{ font-size:.83rem; line-height:1.55; color:var(--ink-muted); border-top:1px solid var(--border); padding-top:12px; }
+  .qhint p .lbl{ font-family:var(--font-mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; color:var(--blue); display:block; margin-bottom:5px; }
+
+  footer{ border-top:1px solid var(--border); margin-top:20px; }
+  .footer-inner{ padding:26px 0 46px; color:var(--ink-faint); font-size:.8rem; font-family:var(--font-mono); line-height:1.6; }
+
+  @media (max-width:640px){
+    .topbar-inner{ padding:12px 16px; }
+    .hero{ padding:34px 0 22px; }
+    .tickets{ grid-template-columns:1fr; }
+    .stat-strip{ width:100%; }
+    .stat-cell{ flex:1; }
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *{ animation:none !important; transition:none !important; }
+    html{ scroll-behavior:auto; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="brand-dot"></span>
+      <span class="brand-text">runbook<span class="dim">://ops</span></span>
+    </div>
+    <nav class="nav" aria-label="Site sections">
+      <button class="nav-btn active" id="navRunbook" type="button">Runbook</button>
+      <button class="nav-btn" id="navInterview" type="button">Interview Prep</button>
+    </nav>
+    <div class="theme-toggle">
+      <span id="themeLabel">LIGHT</span>
+      <button class="switch" id="themeToggle" type="button" aria-pressed="false" aria-label="Toggle dark mode"></button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ===================== RUNBOOK VIEW ===================== -->
+  <section id="view-runbook" class="view active">
+    <div class="hero">
+      <span class="kicker">Troubleshooting reference</span>
+      <h1>Diagnose it before you check the fix.</h1>
+      <p class="sub">Real incidents junior DevOps engineers run into Docker, Kubernetes, Git, Linux, networking, CI/CD, and infrastructure as code. Read the symptom, work the checklist, then reveal the fix to check yourself.</p>
+      <div class="stat-strip" id="statStrip">
+        <span class="stat-cell"><strong id="statTotal">0</strong> scenarios</span>
+        <span class="stat-cell"><strong id="statCats">0</strong> categories</span>
+        <span class="stat-cell progress"><strong id="statResolved">0</strong>/<span id="statTotal2">0</span> resolved</span>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="search-row">
+        <input type="text" id="searchInput" placeholder="Search incidents… e.g. docker, dns, 502">
+      </div>
+      <div class="chip-row" id="chipRow"></div>
+    </div>
+
+    <div class="tickets" id="ticketsGrid"></div>
+    <p class="empty-state" id="emptyState" hidden>No incidents match that search. Try a different keyword or clear the filter.</p>
+  </section>
+
+  <!-- ===================== INTERVIEW VIEW ===================== -->
+  <section id="view-interview" class="view">
+    <div class="hero">
+      <span class="kicker">Interview prep</span>
+      <h1>Know what they're actually testing.</h1>
+      <p class="sub">Common technical and behavioral questions grouped by the companies known for asking them, plus the fundamentals every interviewer circles back to regardless of logo on the building. Open a question to see what a strong answer actually demonstrates.</p>
+    </div>
+
+    <div class="company-tabs" id="companyTabs"></div>
+    <div class="company-panel-head" id="companyHead"></div>
+    <div id="companyContent"></div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap footer-inner">
+    Built for revision, not memorization. talk through each fix in your own words before you read it.
+  </div>
+</footer>
+
+<script>
+(function(){
+
+  /* ============================================================
+     TROUBLESHOOTING SCENARIOS
+  ============================================================ */
+  const PROBLEMS = [
+    { id:1, category:"Docker", title:"Docker Container Exits Immediately",
+      demo:`$ docker run -d myapp
+7f2a91c3e5d1
+$ docker ps
+CONTAINER ID   IMAGE   STATUS
+(nothing listed — it's not running)`,
+      tips:[
+        "Check the full container list, not just running ones, a stopped container still exists.",
+        "Look at the exit code, not just the fact that it stopped.",
+        "Read the container's own logs before assuming it's a Docker problem.",
+        "Does the image expect a long-running foreground process at all?"
+      ],
+      cause:"Containers stay alive only as long as their main process (PID 1) keeps running. Most images fail because that process crashes on startup, finishes and exits normally, or was never designed to run in the foreground.",
+      fix:[
+        "Run docker ps -a to see every container, including exited ones, and note the exit code.",
+        "Pull the logs to see the actual crash reason.",
+        "If it's a missing config file or env var, that's usually the culprit.",
+        "For deeper debugging, override the entrypoint to drop into a shell instead."
+      ],
+      commands:`docker ps -a
+docker logs 7f2a91c3e5d1
+docker run -it myapp sh` },
+
+    { id:2, category:"Docker", title:"Container Port Not Reachable From The Host",
+      demo:`$ docker run -d nginx
+$ curl localhost:8080
+curl: (7) Failed to connect to localhost port 8080`,
+      tips:[
+        "Did you actually publish a port, or just EXPOSE one in the Dockerfile?",
+        "What port is the app inside the container really listening on always 80?",
+        "Does docker ps show any port mapping at all in the PORTS column?"
+      ],
+      cause:"EXPOSE in a Dockerfile is documentation, not a port mapping. Without an explicit -p flag at run time, the container's port is only reachable from inside Docker's own network, never from the host.",
+      fix:[
+        "Re-run the container with an explicit host:container port mapping.",
+        "Confirm the container-side port matches what the app actually binds to.",
+        "Verify with docker ps, the PORTS column should show the mapping."
+      ],
+      commands:`docker run -d -p 8080:80 nginx
+docker ps` },
+
+    { id:3, category:"Docker", title:"Docker Permission Denied",
+      demo:`$ docker ps
+Got permission denied while trying to connect to the Docker
+daemon socket at unix:///var/run/docker.sock`,
+      tips:[
+        "Is your user actually in the docker group right now?",
+        "Did you open a new shell/login session after being added to it?",
+        "Would sudo docker ps work, confirming it's purely a permissions issue?"
+      ],
+      cause:"The Docker daemon's socket is owned by root and the docker group. If your user isn't a member of that group, every docker command fails at the socket before it even considers what you asked for.",
+      fix:[
+        "Add your user to the docker group.",
+        "Start a new login session, group membership doesn't apply to a shell that's already open.",
+        "Confirm it worked without sudo."
+      ],
+      commands:`sudo usermod -aG docker $USER
+# log out and back in, then:
+docker ps` },
+
+    { id:4, category:"Docker", title:"Docker Image Not Found",
+      demo:`$ docker pull myapp:v2
+Error response from daemon: manifest for myapp:v2 not found`,
+      tips:[
+        "Does that exact tag exist in the registry, or only :latest or :v1?",
+        "Are you pulling from the registry you think you are?",
+        "Could it have been pushed under a different name or namespace?"
+      ],
+      cause:"The tag simply isn't where Docker is looking, it was never pushed, it was pushed under a different tag or namespace, or you're pointed at the wrong registry entirely.",
+      fix:[
+        "List the tags that actually exist for the repo in the registry.",
+        "Re-tag and push again if the build only produced :latest.",
+        "Pull the tag that does exist while you sort out the naming."
+      ],
+      commands:`docker pull myapp:<valid-tag>
+docker images` },
+
+    { id:5, category:"Git", title:"Git Push Rejected",
+      demo:`$ git push origin main
+ ! [rejected]        main -> main (fetch first)
+error: failed to push some refs to 'origin'`,
+      tips:[
+        "Has anyone else pushed to this branch since you last pulled?",
+        "Do you want a clean linear history, or is a merge commit acceptable here?",
+        "Do you have local uncommitted changes that could get in the way?"
+      ],
+      cause:"Your local branch is behind the remote, commits exist on origin/main that you don't have locally, and Git refuses to overwrite history it hasn't seen.",
+      fix:[
+        "Pull the missing commits before pushing again.",
+        "Resolve any conflicts Git flags during the rebase.",
+        "Push once your branch includes the remote's history."
+      ],
+      commands:`git pull --rebase origin main
+# resolve conflicts if any, then:
+git push origin main` },
+
+    { id:6, category:"Git", title:"Git Merge Conflict",
+      demo:`$ git merge feature-branch
+CONFLICT (content): Merge conflict in app.py
+Automatic merge failed; fix conflicts and then commit the result.`,
+      tips:[
+        "Which lines does Git actually mark as conflicting, look for the <<<<<<< markers.",
+        "Do you understand why both sides changed that code, not just which version to keep?",
+        "Have you run the tests after resolving, before committing?"
+      ],
+      cause:"Two branches changed overlapping lines in the same file, so Git can't automatically decide which version is correct, that decision needs a human.",
+      fix:[
+        "Open each conflicted file and find the <<<<<<< / ======= / >>>>>>> markers.",
+        "Edit the file down to the version you actually want and delete the markers.",
+        "Stage the resolved files and commit — or continue the rebase if that's what you were doing."
+      ],
+      commands:`git add .
+git commit
+# if you were mid-rebase instead:
+git rebase --continue` },
+
+    { id:7, category:"Networking", title:"Service Is 'Running' But Unreachable",
+      demo:`$ systemctl status myapp
+● myapp.service - active (running)
+$ curl http://server-ip
+curl: (7) Failed to connect to port 80: Connection refused`,
+      tips:[
+        "Is the process actually listening on that port, or just alive?",
+        "Is it bound to 127.0.0.1 only, instead of 0.0.0.0?",
+        "Could a firewall be blocking the port from outside?"
+      ],
+      cause:"'Running' only tells you the process is alive, it says nothing about whether it's bound to the right network interface or whether anything upstream, like a firewall, actually allows traffic to reach it.",
+      fix:[
+        "Confirm the port is listening, and on which interface.",
+        "If it's bound to 127.0.0.1, fix the app or service config to bind 0.0.0.0.",
+        "Check the firewall rules for that port."
+      ],
+      commands:`ss -tulnp | grep :80
+sudo ufw status
+sudo iptables -L -n` },
+
+    { id:8, category:"Linux", title:"Disk Full",
+      demo:`$ touch test.txt
+touch: cannot touch 'test.txt': No space left on device`,
+      tips:[
+        "Which mount point is actually full, is it root, or something else entirely?",
+        "Is it user files, or could it be logs, Docker images, or old kernels?",
+        "Before deleting anything — do you actually know what it is?"
+      ],
+      cause:"Something has been writing faster than anyone noticed — usually logs, Docker layers, or package caches and nobody's been watching the mount point that filled up.",
+      fix:[
+        "Find out which filesystem is actually full.",
+        "Drill into directories to find what's eating the space.",
+        "Clean only what you're sure is safe to remove, not blindly."
+      ],
+      commands:`df -h
+du -sh /* 2>/dev/null | sort -rh | head -10
+docker system prune -a   # if Docker is the culprit` },
+
+    { id:9, category:"Linux", title:"High CPU Usage (400%)",
+      demo:`$ top
+PID   USER   %CPU  COMMAND
+4821  app    398.6 node`,
+      tips:[
+        "Is 398% actually surprising, or normal for a process using 4 threads on a multi-core box?",
+        "Which specific process, not just 'the server,' is driving the load?",
+        "Has usage grown over time, or is this a fresh spike?"
+      ],
+      cause:"A number like 400% just means the process is using roughly 4 CPU cores' worth of work in parallel. It isn't inherently a bug, it's a problem only if it's starving other processes or wasn't expected.",
+      fix:[
+        "Identify exactly which process, and which of its threads, are hot.",
+        "Check whether it's expected load or a runaway loop or leak.",
+        "If it's misbehaving, check what changed recently, a deploy, a traffic pattern, a stuck loop."
+      ],
+      commands:`top
+ps -p 4821 -o %cpu,cmd
+top -H -p 4821   # per-thread breakdown` },
+
+    { id:10, category:"Networking", title:"DNS Resolution Failing",
+      demo:`$ ping 8.8.8.8
+64 bytes from 8.8.8.8: icmp_seq=1 ttl=115 time=12ms
+$ ping google.com
+ping: google.com: Name or service not known`,
+      tips:[
+        "Since the IP works but the name doesn't, is this really a 'network is down' problem?",
+        "What's actually configured as the DNS server right now?",
+        "Does resolution work against a known-good public resolver?"
+      ],
+      cause:"Raw connectivity is fine — the IP ping proves that. The failure is isolated to name resolution: either the configured nameserver is dead or wrong, or the local resolver service itself isn't working.",
+      fix:[
+        "Check what nameserver is actually configured.",
+        "Test resolution directly against a known-good public resolver.",
+        "Fix the configuration (or whatever generates it, like DHCP) if it's wrong."
+      ],
+      commands:`cat /etc/resolv.conf
+nslookup google.com 8.8.8.8
+systemd-resolve --status` },
+
+    { id:11, category:"Networking", title:"SSL Certificate Expired",
+      demo:`$ curl https://api.example.com
+curl: (60) SSL certificate problem: certificate has expired`,
+      tips:[
+        "When did it actually expire, and is anything supposed to auto-renew it?",
+        "Does the fix need a new cert only, or a private key mismatch too?",
+        "Will the web server pick up the new cert without a reload?"
+      ],
+      cause:"The certificate's validity window has passed. Clients enforce this strictly , an expired certificate is treated the same as no encryption at all.",
+      fix:[
+        "Renew or reissue the certificate.",
+        "Install the new cert and key where the web server expects them.",
+        "Reload the web server to pick up the new files."
+      ],
+      commands:`sudo certbot renew
+sudo systemctl reload nginx` },
+
+    { id:12, category:"CI/CD", title:"CI Pipeline Fails During Docker Build",
+      demo:`$ docker build -t myapp .
+Step 4/10 : COPY .env .
+COPY failed: file not found in build context`,
+      tips:[
+        "Does this file exist in the repo, or only on your local machine?",
+        "Is it excluded by .gitignore or .dockerignore in CI's checkout?",
+        "Is CI's build context actually the directory you think it is?"
+      ],
+      cause:"CI runs from a clean checkout of the repo. Anything that only exists on your laptop , untracked files, local env files, uncommitted changes — simply isn't there, and the build context path can also differ from a local build.",
+      fix:[
+        "Confirm the file is actually committed, not just sitting locally.",
+        "Check .dockerignore and .gitignore aren't excluding something the build needs.",
+        "Verify the CI job's working directory matches what the Dockerfile expects."
+      ],
+      commands:`git status --ignored
+cat .dockerignore` },
+
+    { id:13, category:"Kubernetes", title:"Pod Stuck In CrashLoopBackOff",
+      demo:`$ kubectl get pods
+NAME      READY   STATUS             RESTARTS
+web-pod   0/1     CrashLoopBackOff   7`,
+      tips:[
+        "What do the container's own logs say about why it's exiting?",
+        "Is this the current crash, or logs from a previous restart?",
+        "Did a recent config change, image update, or missing secret line up with when this started?"
+      ],
+      cause:"The container starts, then exits with an error, so Kubernetes restarts it repeatedly with increasing backoff. 'CrashLoopBackOff' just describes that cycle, the real cause is always inside the container.",
+      fix:[
+        "Pull the logs to see the actual error the app throws.",
+        "If it crashes before logging anything useful, check the previous container's logs.",
+        "Cross-check kubectl describe for events like OOMKilled or a failed readiness probe."
+      ],
+      commands:`kubectl logs web-pod
+kubectl logs web-pod --previous
+kubectl describe pod web-pod` },
+
+    { id:14, category:"Kubernetes", title:"Kubernetes Service Unreachable",
+      demo:`$ curl http://my-service
+curl: (7) Failed to connect`,
+      tips:[
+        "Does the Service actually have any Endpoints, or is the list empty?",
+        "Do the Service's selector labels match the Pod's labels exactly?",
+        "Are the Pods themselves actually Running and Ready?"
+      ],
+      cause:"A Service routes traffic to Pods purely by label selector. If the selector doesn't match the Pods' labels, even a small typo — the Service ends up with zero endpoints and nowhere to send traffic.",
+      fix:[
+        "Check whether the Service has any endpoints at all.",
+        "Compare the Service's selector against the Pod's actual labels.",
+        "Fix the mismatched label and confirm endpoints populate."
+      ],
+      commands:`kubectl get svc my-service
+kubectl get endpoints my-service
+kubectl get pods --show-labels` },
+
+    { id:15, category:"Linux", title:"Script Permission Denied",
+      demo:`$ ./deploy.sh
+bash: ./deploy.sh: Permission denied
+$ ls -l deploy.sh
+-rw-r--r-- 1 user user 842 deploy.sh`,
+      tips:[
+        "Look closely at the permission string — is the execute bit set for anyone?",
+        "Does the file need to be executable, or could you run it via bash deploy.sh instead?"
+      ],
+      cause:"The file has read and write permission but no execute bit — there's no x anywhere in -rw-r--r-- — so the shell won't run it directly as a program.",
+      fix:[
+        "Add the execute permission.",
+        "Run it directly now that the bit is set."
+      ],
+      commands:`chmod +x deploy.sh
+./deploy.sh` },
+
+    { id:16, category:"Networking", title:"SSH Permission Denied (publickey)",
+      demo:`$ ssh user@server
+user@server: Permission denied (publickey).`,
+      tips:[
+        "Are you even offering the key you think you are? Check verbose output.",
+        "Is that public key actually present in the server's authorized_keys?",
+        "Are the permissions on ~/.ssh and authorized_keys correct? SSH is strict about this.",
+        "Is the username correct for this server or image?"
+      ],
+      cause:"The server rejected every key your client offered. That can be the wrong key, a key missing from authorized_keys, permissions on the server that are too open for SSH's liking, or simply the wrong username.",
+      fix:[
+        "Re-run with -v to see exactly which keys were tried and why they were rejected.",
+        "Confirm the public key is listed in the server's authorized_keys file.",
+        "Check permissions: ~/.ssh should be 700, authorized_keys should be 600.",
+        "Double check the username matches what the server or image expects."
+      ],
+      commands:`ssh -v user@server
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/authorized_keys` },
+
+    { id:17, category:"Linux", title:"High Memory Usage",
+      demo:`$ free -h
+              total   used   free
+Mem:          15Gi    14Gi   200Mi`,
+      tips:[
+        "Which specific process is holding the memory, not just 'the system'?",
+        "Is usage climbing steadily, which suggests a leak, or has it always run this high?",
+        "Is the OOM killer actually firing, or is this just a warning sign so far?"
+      ],
+      cause:"Something, often a single misbehaving process, is holding onto memory faster than it's being freed. Left unresolved, the kernel's OOM killer eventually starts terminating processes to keep the system alive.",
+      fix:[
+        "Rank processes by memory use to find the actual culprit.",
+        "If it's a known leak, restart it as a stopgap and track down the real fix.",
+        "Check the kernel log for OOM killer events to see if it's already caused casualties."
+      ],
+      commands:`ps aux --sort=-%mem | head
+dmesg | grep -i 'out of memory'` },
+
+    { id:18, category:"Docker", title:"Docker Volume / Mount Problem",
+      demo:`$ docker exec myapp ls /app/data
+(empty — but the files clearly exist on the host)`,
+      tips:[
+        "Is the mount actually configured, or did you forget the -v flag entirely?",
+        "Are the host path and container path definitely what you think? Easy to swap by mistake.",
+        "Are you checking the right path inside the container?"
+      ],
+      cause:"A missing mount, or one with host and container paths swapped, means the container either doesn't see the host directory at all, or is looking in the wrong place inside itself.",
+      fix:[
+        "Inspect the container to see what's actually mounted where.",
+        "Confirm the mapping is host:container, in that order, and both paths are correct.",
+        "Re-run with the corrected mount and verify again."
+      ],
+      commands:`docker inspect myapp --format '{{json .Mounts}}'
+docker run -v /data:/app/data myapp` },
+
+    { id:19, category:"Networking", title:"HTTP 502 Bad Gateway",
+      demo:`$ curl https://myapp.com
+502 Bad Gateway`,
+      tips:[
+        "Is the backend process actually running right now?",
+        "Does the proxy's config point at the correct backend host and port?",
+        "Can the proxy reach the backend at the network level at all?",
+        "What do the backend's own logs say — did it crash, time out, or refuse the connection?"
+      ],
+      cause:"A 502 means the proxy got an invalid or no response from whatever it's forwarding to. The problem is almost always on the backend side, or in the network path to it, not the proxy itself.",
+      fix:[
+        "Confirm the backend process is actually up.",
+        "Verify the proxy's upstream config points at the right host and port.",
+        "Test connectivity from the proxy host to the backend directly.",
+        "Check backend logs for crashes or timeouts around the same moment."
+      ],
+      commands:`systemctl status myapp
+curl http://127.0.0.1:<backend-port>
+sudo tail -f /var/log/nginx/error.log` },
+
+    { id:20, category:"CI/CD", title:"Production Deploy Fails After Build, Tests, And Push All Pass",
+      demo:`Build       ✅
+Tests       ✅
+Docker push ✅
+Deploy      ❌`,
+      tips:[
+        "Since everything up to the push succeeded, is this really a code problem, or an environment one?",
+        "Does the deploy step actually have valid credentials for the target cluster or cloud account?",
+        "Is the image tag it's trying to deploy the one that was actually just pushed?",
+        "Is there enough capacity or quota in the target environment for it to schedule?"
+      ],
+      cause:"Build, test, and push all happen inside CI and never touch production. Deploy is the first step that talks to real infrastructure, so failures here are almost always connectivity, credentials, resource limits, or environment-specific config, not the code itself.",
+      fix:[
+        "Read the deploy step's own error output first, not the earlier successful stages.",
+        "Confirm CI has valid, current credentials for the target environment.",
+        "Verify the image tag being deployed matches what was actually pushed.",
+        "If the pod won't schedule, check resource quota or capacity in the cluster."
+      ],
+      commands:`kubectl get pods
+kubectl describe pod <pod>
+kubectl logs <pod>` },
+
+    { id:21, category:"Docker", title:"Docker Compose Services Can't Reach Each Other",
+      demo:`$ docker compose exec web curl http://db:5432
+curl: (6) Could not resolve host: db`,
+      tips:[
+        "Are both services actually defined in the same docker-compose.yml, on the same network?",
+        "Are you using the service name as the hostname, not localhost?",
+        "Did you reference the exact right service name? A typo fails silently as a DNS lookup."
+      ],
+      cause:"Compose gives every service in a file its own DNS name on a shared network, but only when they're on that same network. Referring to another service via localhost, or misspelling the service name, breaks that built-in discovery.",
+      fix:[
+        "Use the service name from docker-compose.yml as the hostname, never localhost.",
+        "Confirm both services are in the same file, or explicitly share a network if split across files.",
+        "Double check the exact spelling of the service name."
+      ],
+      commands:`docker compose ps
+docker network inspect <project>_default` },
+
+    { id:22, category:"Docker", title:"Environment Variables Missing Inside A Container",
+      demo:`$ docker exec myapp printenv | grep API_KEY
+(nothing)`,
+      tips:[
+        "Did you actually pass the variable in, or is it only in a local .env file on your machine?",
+        "If using Compose, is environment: or env_file: set for this specific service?",
+        "Could the app be reading the variable under a slightly different name?"
+      ],
+      cause:"Environment variables don't cross into a container automatically, they have to be explicitly passed with -e, --env-file, or a Compose environment block. A .env file sitting in your project root isn't read unless something explicitly loads it.",
+      fix:[
+        "Pass variables explicitly at run time, or reference an env file in Compose.",
+        "Confirm the variable name matches exactly what the app code expects.",
+        "Verify it landed by checking printenv inside the running container."
+      ],
+      commands:`docker run --env-file .env myapp
+docker exec myapp printenv` },
+
+    { id:23, category:"CI/CD", title:"Docker Build Works Locally But Fails In CI",
+      demo:`Local:  Successfully built 4f3a2b1c
+CI:     COPY failed: file not found in build context`,
+      tips:[
+        "Is the file actually committed to git, or just sitting untracked on your machine?",
+        "Is your local Docker using cached layers that CI's clean build doesn't have?",
+        "Is CI's build context the same directory you build from locally?"
+      ],
+      cause:"Local builds can succeed on stale cache or files that were never committed. CI always starts from a clean checkout with no cache, which exposes anything that depended on local-only state.",
+      fix:[
+        "Run a clean local build with no cache to reproduce what CI sees.",
+        "Confirm every file the Dockerfile needs is actually committed.",
+        "Match the CI job's build context path to what the Dockerfile expects."
+      ],
+      commands:`docker build --no-cache -t myapp .
+git status --ignored` },
+
+    { id:24, category:"Kubernetes", title:"Kubernetes ImagePullBackOff",
+      demo:`$ kubectl get pods
+NAME      READY   STATUS             RESTARTS
+web-pod   0/1     ImagePullBackOff   0`,
+      tips:[
+        "Is the image name and tag exactly right — no typos, correct registry?",
+        "If it's a private registry, does the cluster actually have credentials for it?",
+        "Can you pull that exact image manually, to isolate the problem?"
+      ],
+      cause:"The kubelet couldn't pull the image — either it doesn't exist at that name and tag, or the cluster lacks the registry credentials needed for a private repo.",
+      fix:[
+        "Check the exact error with kubectl describe — it usually states unauthorized or not found.",
+        "Try pulling the same image manually to confirm it exists and you have access.",
+        "If it's private, verify an imagePullSecret is attached to the pod's service account."
+      ],
+      commands:`kubectl describe pod web-pod
+docker pull <image>:<tag>
+kubectl get secrets` },
+
+    { id:25, category:"Kubernetes", title:"Kubernetes Pod Stuck In Pending",
+      demo:`$ kubectl get pods
+NAME      READY   STATUS    RESTARTS
+web-pod   0/1     Pending   0`,
+      tips:[
+        "What does kubectl describe say under Events? That's where the real reason lives.",
+        "Does any node actually have enough CPU or memory to fit this pod's requests?",
+        "If it needs a PersistentVolumeClaim, is that claim actually bound?"
+      ],
+      cause:"Pending means the scheduler hasn't been able to place the pod on any node, usually insufficient resources across all nodes, a taint/toleration mismatch, or an unbound volume claim it's waiting on.",
+      fix:[
+        "Read the Events section of kubectl describe, it names the exact scheduling failure.",
+        "Check node capacity against what the pod requests.",
+        "If a PVC is involved, confirm it's Bound, not Pending itself."
+      ],
+      commands:`kubectl describe pod web-pod
+kubectl get nodes -o wide
+kubectl get pvc` },
+
+    { id:26, category:"Networking", title:"Nginx Reverse Proxy Returns 404",
+      demo:`$ curl https://myapp.com/api/users
+404 Not Found (nginx)`,
+      tips:[
+        "Does the location block actually match this path?",
+        "Trailing slashes matter: does proxy_pass have one when location doesn't, or vice versa?",
+        "Is this 404 coming from nginx itself, or passed through from the backend?"
+      ],
+      cause:"Nginx location matching, and how proxy_pass rewrites the path, are stricter than they look. A mismatched trailing slash between location and proxy_pass silently changes what path gets forwarded to the backend.",
+      fix:[
+        "Check whether the response is nginx's own 404 page or the backend's.",
+        "Compare the location block's path against the request path exactly.",
+        "Make the trailing slash on location and proxy_pass consistent, then test again."
+      ],
+      commands:`curl -I https://myapp.com/api/users
+sudo nginx -t
+sudo tail -f /var/log/nginx/error.log` },
+
+    { id:27, category:"Linux", title:"Cron Job Doesn't Run",
+      demo:`$ crontab -l
+0 2 * * * /home/user/backup.sh
+(but the backup never happens)`,
+      tips:[
+        "Would the script even run if you called it manually right now?",
+        "Does the script rely on environment variables or a PATH that only exists in your interactive shell?",
+        "Is the script executable, and does it use absolute paths internally?",
+        "Is anything actually landing in the system's cron log?"
+      ],
+      cause:"Cron runs jobs with a minimal environment no PATH, no shell profile, none of the variables an interactive terminal sets up. A script that works fine by hand often fails silently under cron because it quietly assumes that context.",
+      fix:[
+        "Test the script exactly as cron would, with a stripped environment.",
+        "Use absolute paths everywhere inside the script, including for the script itself in the crontab entry.",
+        "Set any required PATH or env vars explicitly at the top of the script.",
+        "Redirect output to a log file so failures aren't silent next time."
+      ],
+      commands:`env -i /home/user/backup.sh
+grep CRON /var/log/syslog` },
+
+    { id:28, category:"Linux", title:"Application Logs Filling The Disk",
+      demo:`$ df -h /var/log
+/dev/sda1   50G   49G   0G  100%`,
+      tips:[
+        "Which specific log file has grown huge? Check sizes, not just the mount.",
+        "Is logrotate actually installed and configured for this application's logs?",
+        "Is the app logging at debug level in production by mistake?"
+      ],
+      cause:"Without log rotation, application logs grow forever. A verbose app, or one accidentally left at debug logging, can fill a disk in days — and once /var/log is full, other services that log there can start failing too.",
+      fix:[
+        "Find the largest log files first.",
+        "Set up logrotate for this app if it isn't already, with sensible size and age limits.",
+        "Bring logging back down to a sane production level if it was left at debug."
+      ],
+      commands:`du -sh /var/log/* | sort -rh | head
+sudo logrotate -f /etc/logrotate.d/myapp` },
+
+    { id:29, category:"Linux", title:"Too Many Open Files",
+      demo:`$ tail app.log
+Error: EMFILE: too many open files`,
+      tips:[
+        "What's the current ulimit for open files on this user or process?",
+        "Is the app actually leaking file descriptors, connections or handles never closed?",
+        "Is this a real leak, or just a ceiling that's too low for legitimate load?"
+      ],
+      cause:"Every process has a limit on how many files or sockets it can hold open at once. Hitting it usually means a leak, connections or handles that never get closed or a limit set too conservatively for the app's real concurrency.",
+      fix:[
+        "Check the current limit for the affected process or user.",
+        "Look at what the process actually has open right now to spot a leak.",
+        "Raise the limit if it's genuinely too low, and separately fix any leak in the code."
+      ],
+      commands:`ulimit -n
+lsof -p <pid> | wc -l
+# raise the limit in /etc/security/limits.conf if needed` },
+
+    { id:30, category:"IaC", title:"Terraform State Lock Error",
+      demo:`$ terraform apply
+Error: Error acquiring the state lock
+Lock Info: ID: 8f3a...  who: ci-runner-42`,
+      tips:[
+        "Is another apply or plan actually still running somewhere, or did one crash mid-run?",
+        "Do you know exactly who or what is shown as holding the lock before touching it?",
+        "Is force-unlocking safe right now, or could it corrupt state if something really is mid-write?"
+      ],
+      cause:"Terraform locks its state file during any write to prevent two processes from corrupting it at once. This is usually either a genuinely concurrent run, or a stale lock left behind by a process that crashed before releasing it.",
+      fix:[
+        "Check whether the process named in the lock info is actually still active.",
+        "If it's confirmed dead, not just slow, force-unlock using the lock ID shown.",
+        "If it's a real concurrent run, just wait for it to finish instead."
+      ],
+      commands:`terraform force-unlock 8f3a...
+# only once you've confirmed the lock is stale` },
+
+    { id:31, category:"IaC", title:"Terraform Plan Shows Unexpected Changes",
+      demo:`$ terraform plan
+  ~ aws_instance.web
+      instance_type: "t3.micro" -> "t3.small"
+(nobody remembers changing this in code)`,
+      tips:[
+        "Did someone change this resource directly in the console instead of through Terraform?",
+        "Does the .tf code actually say t3.micro, or did the code change and nobody noticed?",
+        "Is this drift, or a legitimate upstream default that changed?"
+      ],
+      cause:"Terraform compares its state file against real infrastructure. When they disagree, it's almost always because something was changed outside Terraform, manually in the console, by another tool, or by an emergency fix that never got reflected back into code.",
+      fix:[
+        "Check the resource's real-world settings against what's in the .tf files.",
+        "Decide whether to update the code to match reality, or apply Terraform to force it back.",
+        "Going forward, treat the console as read-only for anything Terraform manages."
+      ],
+      commands:`terraform plan
+terraform state show aws_instance.web` },
+
+    { id:32, category:"IaC", title:"Ansible 'UNREACHABLE' Host Error",
+      demo:`$ ansible-playbook deploy.yml
+fatal: [web-01]: UNREACHABLE! => "msg": "Failed to connect
+to host via ssh"`,
+      tips:[
+        "Can you SSH to that host manually right now, outside of Ansible entirely?",
+        "Does the inventory have the right IP or hostname and SSH user for this host?",
+        "Is the SSH key Ansible is using actually the one authorized on that host?"
+      ],
+      cause:"UNREACHABLE means Ansible couldn't even establish an SSH connection. This is a connectivity or authentication problem, not a playbook logic problem, so nothing in the playbook's tasks is relevant yet.",
+      fix:[
+        "Test plain SSH to the host with the same user and key Ansible would use.",
+        "Check the inventory file for a stale IP, wrong user, or wrong key path.",
+        "Fix connectivity first, then worry about what the playbook actually does."
+      ],
+      commands:`ssh -i key.pem user@web-01
+ansible web-01 -m ping -i inventory.ini` },
+
+    { id:33, category:"Networking", title:"Load Balancer Marks All Backends Unhealthy",
+      demo:`$ curl https://myapp.com
+503 Service Unavailable
+(LB dashboard: 0/3 targets healthy)`,
+      tips:[
+        "Does the health check path actually exist and return 200 on the backend?",
+        "Is the health check hitting the right port — the app port, not something else?",
+        "Are backends healthy from the load balancer's own network path, even if they respond fine from yours?"
+      ],
+      cause:"A load balancer only routes to targets that pass its health check. If the check path returns a non-200, times out, or hits the wrong port, every target gets marked unhealthy even though the application itself may be working fine.",
+      fix:[
+        "Manually curl the exact health check path and port the load balancer is configured to use.",
+        "Fix the mismatch: wrong path, wrong port, or a check stricter than the config expects.",
+        "Confirm targets go healthy again in the dashboard after the fix."
+      ],
+      commands:`curl -i http://<backend-ip>:<port>/health` },
+
+    { id:34, category:"Linux", title:"Clock Drift Causing Auth Failures",
+      demo:`$ curl -H "Authorization: Bearer $TOKEN" https://api.example.com
+401 Unauthorized: Token not yet valid`,
+      tips:[
+        "What does the server's actual clock say right now, compared to real time?",
+        "Is an NTP client even running on this box?",
+        "Could this be a VM that was suspended and resumed, and has since drifted?"
+      ],
+      cause:"Many auth schemes JWTs, signed requests, TOTP codes are time-sensitive. If a server's clock drifts even a couple of minutes from real time, otherwise-valid tokens get rejected as expired or not-yet-valid.",
+      fix:[
+        "Check the current system time against real time.",
+        "Confirm an NTP client is installed, running, and actually syncing.",
+        "Force a resync if it's drifted, and make sure ongoing sync is set up going forward."
+      ],
+      commands:`timedatectl
+sudo systemctl status chronyd
+sudo chronyc makestep` },
+
+    { id:35, category:"Linux", title:"High Load Average, Low CPU Usage",
+      demo:`$ uptime
+load average: 8.42, 7.90, 6.15
+$ top
+%Cpu(s): 3.2 us, 1.1 sy, 0.0 id ... wa(95.7)`,
+      tips:[
+        "Is CPU actually busy, or mostly idle while load average is high?",
+        "What does the wa (I/O wait) figure actually say?",
+        "Is a specific disk or process stuck in uninterruptible sleep, state D?"
+      ],
+      cause:"Linux load average counts processes waiting for a CPU slot or waiting on I/O. High load with low CPU usage almost always points to a disk or network filesystem bottleneck, the CPU is idle because processes are stuck waiting on I/O, not because there's nothing to do.",
+      fix:[
+        "Check the I/O wait percentage a high number confirms it's I/O, not CPU.",
+        "Find which process or disk is actually stuck, with iostat or by spotting D-state processes.",
+        "Address the underlying bottleneck: slow disk, saturated network mount, or a runaway write."
+      ],
+      commands:`uptime
+top
+iostat -x 1
+ps aux | awk '$8=="D"'` }
+  ];
+
+  const CATEGORY_ORDER = ["Docker","Kubernetes","Git","Linux","Networking","CI/CD","IaC"];
+
+  /* ============================================================
+     INTERVIEW QUESTIONS
+  ============================================================ */
+  const COMPANIES = [
+    { key:"google", name:"Google", badge:"G",
+      blurb:"Google's SRE org popularized the discipline itself expect deep systems fundamentals, a real design question, and a genuine interest in how you think about reliability, not just whether a service is up.",
+      questions:[
+        { q:"Walk me through what happens between typing a URL in a browser and the page loading.", hint:"Whether you understand the full stack DNS, TCP/TLS, HTTP, rendering end to end, not just fragments memorized in isolation." },
+        { q:"Design a monitoring and alerting system for a fleet of 10,000 servers.", hint:"How you think about scale, signal versus noise, and avoiding alert fatigue not just naming tools." },
+        { q:"What's the difference between a process and a thread, and why does it matter for a service you'd run in production?", hint:"OS fundamentals connected to a real operational tradeoff, not textbook recall." },
+        { q:"Tell me about a production incident you were involved in. What was your role, and what changed afterward?", hint:"Ownership, and whether the follow-up was a real fix rather than blame, the blameless postmortem mindset." },
+        { q:"Write a script that parses a log file and reports the number of errors per hour.", hint:"Practical scripting under mild ambiguity, not algorithmic cleverness." },
+        { q:"How would you decide whether a service is healthy enough to keep shipping features versus needing a reliability push?", hint:"Familiarity with error-budget style thinking, even if you don't name it directly." }
+      ]
+    },
+    { key:"amazon", name:"Amazon · AWS", badge:"AWS",
+      blurb:"Amazon interviews are built around its Leadership Principles expect behavioral questions asked in that specific language, paired with real AWS architecture depth.",
+      questions:[
+        { q:"Tell me about a time you had to dive deep into a problem that others had given up on.", hint:"The Dive Deep leadership principle do you go past the surface-level fix, or stop at 'it's fine now'?" },
+        { q:"What's the difference between an Application Load Balancer and a Network Load Balancer, and when would you choose each?", hint:"Real AWS networking depth rather than repeating product names." },
+        { q:"How would you design a system that stays available if an entire AWS Availability Zone goes down?", hint:"Multi-AZ architecture thinking one of the most common AWS reliability questions." },
+        { q:"Tell me about a time you owned a project end-to-end, including a part that wasn't originally your responsibility.", hint:"The Ownership leadership principle." },
+        { q:"Explain the difference between an IAM role and an IAM user, and when you'd use each.", hint:"Whether you actually understand AWS access control, not just that both terms exist." },
+        { q:"How does EC2 Auto Scaling decide when to add or remove instances?", hint:"Understanding of scaling policies and the metrics behind them, not just the concept of 'auto scaling.'" }
+      ]
+    },
+    { key:"microsoft", name:"Microsoft · Azure", badge:"MS",
+      blurb:"Microsoft leans on growth-mindset behavioral questions and, for platform roles, increasingly practical Azure DevOps and deployment-strategy questions.",
+      questions:[
+        { q:"Tell me about a time you had to learn an unfamiliar technology quickly to solve a problem.", hint:"Growth mindset a recurring theme across Microsoft interviews." },
+        { q:"How would you set up a blue-green deployment for a service running in Azure?", hint:"Practical deployment-strategy knowledge, not just the theory of what blue-green means." },
+        { q:"What's the difference between an ARM template and a tool like Terraform, and when would you pick one over the other?", hint:"Whether you understand the real tradeoffs, not just that both tools exist." },
+        { q:"Walk me through how you'd troubleshoot a VM that suddenly became unreachable over SSH or RDP.", hint:"A structured troubleshooting approach under pressure, working outward from the simplest explanation." },
+        { q:"Describe a time you disagreed with a decision but committed to it once it was made.", hint:"Collaboration and the ability to work within a team decision you didn't originally favor." }
+      ]
+    },
+    { key:"meta", name:"Meta", badge:"FB",
+      blurb:"Meta keeps a high technical bar even for infrastructure roles expect a systems design problem worked live, and questions that probe how you act under genuine ambiguity.",
+      questions:[
+        { q:"How would you debug a service that has intermittent latency spikes but looks fine on average?", hint:"Whether you reach for percentiles and tail latency, not just averages that hide the problem." },
+        { q:"Design a rate limiter for a public API.", hint:"A classic systems-design problem testing algorithmic thinking and architecture together." },
+        { q:"Explain the CAP theorem and how it showed up in a real system you've worked on.", hint:"Whether you can connect theory to a concrete tradeoff you've actually made, not just recite the definition." },
+        { q:"Tell me about a decision you made with incomplete information. How did it turn out?", hint:"Comfort with ambiguity and fast iteration central to how Meta expects people to operate." }
+      ]
+    },
+    { key:"netflix", name:"Netflix", badge:"N",
+      blurb:"Netflix's culture of Freedom & Responsibility and radical candor shows up directly in interviews, alongside its legacy as a pioneer of chaos engineering.",
+      questions:[
+        { q:"What is chaos engineering, and why would a team deliberately break things in production?", hint:"Whether you understand resilience testing as a discipline, not just recognizing the name Chaos Monkey." },
+        { q:"How would you design a service to degrade gracefully when one of its dependencies goes down?", hint:"Fault-tolerance thinking fallbacks, circuit breakers, sane defaults." },
+        { q:"Explain a canary deployment and why you'd use one.", hint:"Practical understanding of progressive delivery, not just the term." },
+        { q:"Netflix culture values direct feedback. Tell me about a time you gave a peer or manager difficult feedback.", hint:"Candor and comfort operating in a low-process, high-trust culture." }
+      ]
+    },
+    { key:"universal", name:"Universal Fundamentals", badge:"∗",
+      blurb:"Regardless of which logo is on the building, these are the fundamentals almost every DevOps or SRE interviewer circles back to sooner or later.",
+      groups:[
+        { category:"Linux & Systems", questions:[
+          { q:"What's the difference between a hard link and a symbolic link?", hint:"Whether you understand how the filesystem actually references data, not just the command syntax." },
+          { q:"How would you find which process is using a specific port?", hint:"Comfort with the everyday diagnostic toolkit under time pressure." },
+          { q:"Walk me through how you'd investigate a server that's suddenly slow.", hint:"A structured approach: CPU, memory, disk, network, in some sensible order rather than guessing." }
+        ]},
+        { category:"Networking", questions:[
+          { q:"Explain the difference between TCP and UDP, and give a real example of when you'd use each.", hint:"Whether the tradeoff (reliability versus speed) connects to an actual use case for you." },
+          { q:"What happens, step by step, during a TLS handshake?", hint:"Depth on a topic most candidates only know at the surface level." },
+          { q:"What's the difference between a 502 and a 504 error?", hint:"Whether you distinguish 'got a bad response' from 'got no response in time' different debugging paths." }
+        ]},
+        { category:"Containers & Orchestration", questions:[
+          { q:"What problem does Kubernetes actually solve that plain Docker doesn't?", hint:"Whether you can explain orchestration's purpose, not just recite feature lists." },
+          { q:"Explain the difference between a Deployment and a StatefulSet, and when you'd need the latter.", hint:"Understanding of stateful workload requirements stable identity and storage." },
+          { q:"How does a readiness probe differ from a liveness probe?", hint:"Whether you know these control different things traffic routing versus restarts." }
+        ]},
+        { category:"CI/CD & Cloud", questions:[
+          { q:"What's the difference between continuous delivery and continuous deployment?", hint:"A commonly blurred distinction human approval gate or not." },
+          { q:"How would you roll back a bad deployment quickly and safely?", hint:"Whether you have a concrete mechanism in mind, not just 'redeploy the old version.'" },
+          { q:"Why use Infrastructure as Code instead of clicking through a console?", hint:"Reproducibility, review, and auditability not just 'it's faster.'" }
+        ]},
+        { category:"Behavioral", questions:[
+          { q:"Tell me about a time a deployment went wrong. What did you do, and what changed afterward?", hint:"Ownership and whether the process actually improved, not just whether you fixed it that day." },
+          { q:"Describe a time you had to push back on a deadline you thought was unrealistic.", hint:"Whether you can advocate for quality or safety without just going along with pressure." }
+        ]}
+      ]
+    }
+  ];
+
+  /* ============================================================
+     UTIL
+  ============================================================ */
+  function slug(cat){ return cat.toLowerCase().replace(/[^a-z0-9]+/g,'-'); }
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[s]);
+  }
+
+  /* ============================================================
+     THEME
+  ============================================================ */
+  const root = document.documentElement;
+  const THEME_KEY = 'ops-runbook-theme';
+
+  function setTheme(theme, persist){
+    root.setAttribute('data-theme', theme);
+    document.getElementById('themeToggle').setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+    document.getElementById('themeLabel').textContent = theme.toUpperCase();
+    if(persist && window.storage){
+      window.storage.set(THEME_KEY, theme, false).catch(function(){});
+    }
+  }
+
+  async function initTheme(){
+    let theme = null;
+    try{
+      if(window.storage){
+        const r = await window.storage.get(THEME_KEY, false);
+        theme = r ? r.value : null;
+      }
+    }catch(e){ theme = null; }
+    if(!theme){
+      theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    }
+    setTheme(theme, false);
+  }
+
+  document.getElementById('themeToggle').addEventListener('click', function(){
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    setTheme(next, true);
+  });
+
+  /* ============================================================
+     NAV
+  ============================================================ */
+  const navRunbook = document.getElementById('navRunbook');
+  const navInterview = document.getElementById('navInterview');
+  const viewRunbook = document.getElementById('view-runbook');
+  const viewInterview = document.getElementById('view-interview');
+
+  navRunbook.addEventListener('click', function(){
+    navRunbook.classList.add('active'); navInterview.classList.remove('active');
+    viewRunbook.classList.add('active'); viewInterview.classList.remove('active');
+  });
+  navInterview.addEventListener('click', function(){
+    navInterview.classList.add('active'); navRunbook.classList.remove('active');
+    viewInterview.classList.add('active'); viewRunbook.classList.remove('active');
+    if(!COMPANIES._rendered){ renderCompanyTabs(); selectCompany(COMPANIES[0].key); COMPANIES._rendered = true; }
+  });
+
+  /* ============================================================
+     RUNBOOK: STATE + STORAGE
+  ============================================================ */
+  const resolvedSet = new Set();
+  const RESOLVED_PREFIX = 'ops-runbook-resolved:';
+
+  async function loadResolved(){
+    try{
+      if(window.storage){
+        const r = await window.storage.list(RESOLVED_PREFIX, false);
+        if(r && r.keys){
+          r.keys.forEach(function(k){ resolvedSet.add(k.replace(RESOLVED_PREFIX,'')); });
+        }
+      }
+    }catch(e){ /* start fresh */ }
+  }
+
+  function markResolved(id){
+    if(resolvedSet.has(String(id))) return;
+    resolvedSet.add(String(id));
+    updateProgress();
+    if(window.storage){
+      window.storage.set(RESOLVED_PREFIX + id, '1', false).catch(function(){});
+    }
+  }
+
+  function updateProgress(){
+    document.getElementById('statResolved').textContent = resolvedSet.size;
+  }
+
+  /* ============================================================
+     RUNBOOK: RENDER
+  ============================================================ */
+  let activeCategory = 'all';
+
+  function buildChips(){
+    const counts = {};
+    PROBLEMS.forEach(function(p){ counts[p.category] = (counts[p.category]||0) + 1; });
+    const chipRow = document.getElementById('chipRow');
+    const all = document.createElement('button');
+    all.className = 'chip active';
+    all.dataset.cat = 'all';
+    all.innerHTML = 'All <span class="n">' + PROBLEMS.length + '</span>';
+    chipRow.appendChild(all);
+    CATEGORY_ORDER.forEach(function(cat){
+      const c = document.createElement('button');
+      c.className = 'chip cat-' + slug(cat);
+      c.dataset.cat = cat;
+      c.innerHTML = escapeHtml(cat) + ' <span class="n">' + (counts[cat]||0) + '</span>';
+      chipRow.appendChild(c);
+    });
+    chipRow.addEventListener('click', function(e){
+      const btn = e.target.closest('.chip');
+      if(!btn) return;
+      chipRow.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('active'); });
+      btn.classList.add('active');
+      activeCategory = btn.dataset.cat;
+      applyFilters();
+    });
+
+    document.getElementById('statTotal').textContent = PROBLEMS.length;
+    document.getElementById('statTotal2').textContent = PROBLEMS.length;
+    document.getElementById('statCats').textContent = CATEGORY_ORDER.length;
+  }
+
+  function applyFilters(){
+    const q = document.getElementById('searchInput').value.trim().toLowerCase();
+    const filtered = PROBLEMS.filter(function(p){
+      const matchesCat = activeCategory === 'all' || p.category === activeCategory;
+      const hay = (p.title + ' ' + p.category + ' ' + p.demo).toLowerCase();
+      const matchesQ = !q || hay.indexOf(q) !== -1;
+      return matchesCat && matchesQ;
+    });
+    renderTickets(filtered);
+    document.getElementById('emptyState').hidden = filtered.length !== 0;
+  }
+
+  function renderTickets(list){
+    const grid = document.getElementById('ticketsGrid');
+    grid.innerHTML = '';
+    list.forEach(function(p){
+      const isResolved = resolvedSet.has(String(p.id));
+      const card = document.createElement('article');
+      card.className = 'ticket cat-' + slug(p.category);
+      card.dataset.id = p.id;
+      const panelId = 'solution-' + p.id;
+      card.innerHTML =
+        '<div class="ticket-head">' +
+          '<span class="cat-tag">' + escapeHtml(p.category) + '</span>' +
+          '<span class="status-pill ' + (isResolved ? 'is-resolved' : 'is-open') + '">' +
+            '<span class="status-dot"></span>' + (isResolved ? 'RESOLVED' : 'OPEN') +
+          '</span>' +
+        '</div>' +
+        '<h3 class="ticket-title"><span class="idx">#' + String(p.id).padStart(2,'0') + '</span> ' + escapeHtml(p.title) + '</h3>' +
+        '<div class="demo-block">' +
+          '<div class="demo-chrome"><i></i><i></i><i></i></div>' +
+          '<pre class="demo-text">' + escapeHtml(p.demo) + '</pre>' +
+        '</div>' +
+        '<div class="tips-block">' +
+          '<p class="block-label">Diagnostic checklist</p>' +
+          '<ul class="tips-list">' + p.tips.map(function(t){ return '<li>' + escapeHtml(t) + '</li>'; }).join('') + '</ul>' +
+        '</div>' +
+        '<button class="reveal-btn" type="button" aria-expanded="' + (isResolved ? 'true' : 'false') + '" aria-controls="' + panelId + '">' +
+          '<span class="reveal-btn-text">' + (isResolved ? 'Hide fix' : 'Reveal fix') + '</span>' +
+          '<span class="chev">▾</span>' +
+        '</button>' +
+        '<div class="solution-panel" id="' + panelId + '" ' + (isResolved ? '' : 'hidden') + '>' +
+          '<p class="block-label">Root cause</p>' +
+          '<p class="cause-text">' + escapeHtml(p.cause) + '</p>' +
+          '<p class="block-label">Fix it</p>' +
+          '<ol class="fix-list">' + p.fix.map(function(f){ return '<li>' + escapeHtml(f) + '</li>'; }).join('') + '</ol>' +
+          (p.commands ? '<div class="demo-block"><div class="demo-chrome"><i></i><i></i><i></i></div><pre class="demo-text">' + escapeHtml(p.commands) + '</pre></div>' : '') +
+        '</div>';
+      grid.appendChild(card);
+    });
+    attachRevealHandlers();
+  }
+
+  function attachRevealHandlers(){
+    document.querySelectorAll('.reveal-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        const card = btn.closest('.ticket');
+        const panel = card.querySelector('.solution-panel');
+        const id = card.dataset.id;
+        const willOpen = panel.hasAttribute('hidden');
+        if(willOpen){
+          panel.removeAttribute('hidden');
+          btn.setAttribute('aria-expanded','true');
+          btn.querySelector('.reveal-btn-text').textContent = 'Hide fix';
+          if(!resolvedSet.has(id)){
+            markResolved(id);
+            const pill = card.querySelector('.status-pill');
+            pill.className = 'status-pill is-resolved';
+            pill.innerHTML = '<span class="status-dot"></span>RESOLVED';
+          }
+        }else{
+          panel.setAttribute('hidden','');
+          btn.setAttribute('aria-expanded','false');
+          btn.querySelector('.reveal-btn-text').textContent = 'Show fix';
+        }
+      });
+    });
+  }
+
+  document.getElementById('searchInput').addEventListener('input', applyFilters);
+
+  /* ============================================================
+     INTERVIEW: RENDER
+  ============================================================ */
+  function renderCompanyTabs(){
+    const wrap = document.getElementById('companyTabs');
+    wrap.innerHTML = '';
+    COMPANIES.forEach(function(co){
+      const btn = document.createElement('button');
+      btn.className = 'company-tab co-' + co.key;
+      btn.dataset.key = co.key;
+      btn.innerHTML = '<span class="badge">' + escapeHtml(co.badge) + '</span><span class="name">' + escapeHtml(co.name) + '</span>';
+      btn.addEventListener('click', function(){ selectCompany(co.key); });
+      wrap.appendChild(btn);
+    });
+  }
+
+  function selectCompany(key){
+    document.querySelectorAll('.company-tab').forEach(function(t){
+      t.classList.toggle('active', t.dataset.key === key);
+    });
+    const co = COMPANIES.find(function(c){ return c.key === key; });
+    if(!co) return;
+
+    document.getElementById('companyHead').innerHTML =
+      '<h2>' + escapeHtml(co.name) + '</h2><p>' + escapeHtml(co.blurb) + '</p>';
+
+    const content = document.getElementById('companyContent');
+    content.innerHTML = '';
+
+    function buildQList(questions){
+      const qlist = document.createElement('div');
+      qlist.className = 'qlist';
+      questions.forEach(function(item){
+        const det = document.createElement('details');
+        det.className = 'qitem';
+        det.innerHTML =
+          '<summary>' + escapeHtml(item.q) + '<span class="qmark">+</span></summary>' +
+          '<div class="qhint"><p><span class="lbl">What it is really testing</span>' + escapeHtml(item.hint) + '</p></div>';
+        qlist.appendChild(det);
+      });
+      return qlist;
+    }
+
+    if(co.questions){
+      content.appendChild(buildQList(co.questions));
+    }else if(co.groups){
+      co.groups.forEach(function(g){
+        const section = document.createElement('div');
+        section.className = 'qgroup';
+        const h = document.createElement('p');
+        h.className = 'qgroup-title';
+        h.textContent = g.category;
+        section.appendChild(h);
+        section.appendChild(buildQList(g.questions));
+        content.appendChild(section);
+      });
+    }
+  }
+
+  /* ============================================================
+     INIT
+  ============================================================ */
+  async function init(){
+    await initTheme();
+    await loadResolved();
+    buildChips();
+    updateProgress();
+    applyFilters();
+  }
+  init();
+
+})();
+</script>
+</body>
+</html>
