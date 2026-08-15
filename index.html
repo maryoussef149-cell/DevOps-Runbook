@@ -32,7 +32,8 @@
     --amber:#B9791C;   --amber-soft:#FBEED9;
     --green:#2C8158;   --green-soft:#E1F3E8;
     --red:#B23B30;     --red-soft:#FBE6E3;
-
+    --bg-translucent: rgba(241,244,247,0.88);
+    
     --radius:10px;
     --font-display:'Space Grotesk', system-ui, sans-serif;
     --font-body:'Inter', system-ui, sans-serif;
@@ -65,6 +66,7 @@
     --amber:#E3A857;   --amber-soft:#332715;
     --green:#5FC189;   --green-soft:#123324;
     --red:#E27164;     --red-soft:#331A15;
+    --bg-translucent: rgba(12,26,38,0.88);
     --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.18);
   }
 
@@ -94,7 +96,7 @@
   /* ---------- TOPBAR ---------- */
   .topbar{
     position:sticky; top:0; z-index:40;
-    background-color:color-mix(in srgb, var(--bg) 88%, transparent);
+    background-color:var(--bg-translucent);
     backdrop-filter:blur(8px);
     border-bottom:1px solid var(--border);
   }
@@ -194,7 +196,7 @@
   .chip .n{ color:var(--ink-faint); font-family:var(--font-mono); font-weight:500; }
   .chip:hover{ border-color:var(--border-strong); color:var(--ink); }
   .chip.active{ background:var(--ink); color:var(--bg-panel); border-color:var(--ink); }
-  .chip.active .n{ color:color-mix(in srgb, var(--bg-panel) 70%, transparent); }
+  .chip.active .n{ color:var(--bg-panel); opacity:.7; }
   [data-theme="dark"] .chip.active{ background:var(--blue); border-color:var(--blue); color:#0C1A26; }
   [data-theme="dark"] .chip.active .n{ color:#0C1A26; opacity:.7; }
 
@@ -262,7 +264,7 @@
   .demo-chrome i{ width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,0.18); }
   .demo-text{
     margin:0; padding:12px 14px 14px; font-size:.8rem; line-height:1.6;
-    color:var(--ink-on-inset); white-space:pre-wrap; word-break:break-word;
+    color:var(--ink-on-inset); white-space:pre-wrap; overflow-wrap:anywhere;
   }
 
   .tips-block{ margin-bottom:14px; }
